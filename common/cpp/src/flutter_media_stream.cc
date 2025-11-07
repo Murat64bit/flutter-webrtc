@@ -138,6 +138,8 @@ void FlutterMediaStream::GetUserAudio(const EncodableMap& constraints,
       base_->audio_device_->RecordingDeviceName(0, strRecordingName,
                                                 strRecordingGuid);
       sourceId = strRecordingGuid;
+      // Set default device (not communication device) to prevent Windows audio ducking
+      base_->audio_device_->SetRecordingDevice(0);
     }
 
     char strPlayoutName[256];
@@ -148,6 +150,11 @@ void FlutterMediaStream::GetUserAudio(const EncodableMap& constraints,
       if (deviceId != "" && deviceId == strPlayoutGuid) {
         base_->audio_device_->SetPlayoutDevice(i);
       }
+    }
+
+    if (deviceId == "") {
+      // Set default device (not communication device) to prevent Windows audio ducking
+      base_->audio_device_->SetPlayoutDevice(0);
     }
 
     scoped_refptr<RTCAudioSource> source =
